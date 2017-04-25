@@ -129,6 +129,7 @@ class ReactDartComponentFactoryProxy<TComponent extends Component> extends React
       ..remove('ref');
 
     var internal = new ReactDartComponentInternal()
+
       ..props = extendedProps;
 
     var interopProps = new InteropProps(internal: internal);
@@ -175,13 +176,21 @@ final ReactDartInteropStatics _dartInteropStatics = (() {
     };
 
     Component component = componentStatics.componentFactory()
-        ..initComponentInternal(internal.props, jsRedraw, getRef, jsThis);
+        ..initComponentInternal(internal.context, internal.props, jsRedraw, getRef, jsThis);
 
     internal.component = component;
     internal.isMounted = false;
     internal.props = component.props;
 
     component.initStateInternal();
+  });
+
+  Map getChildContext(ReactDartComponentInternal internal) => zone.run(() {
+    return internal.component.getChildContext();
+  });
+
+  Iterable<String> getChildContextKeys(ReactDartComponentInternal internal) => zone.run(() {
+    return internal.component.childContextKeys;
   });
 
   /// Wrapper for [Component.componentWillMount].
@@ -283,6 +292,8 @@ final ReactDartInteropStatics _dartInteropStatics = (() {
 
   return new ReactDartInteropStatics(
       initComponent: allowInterop(initComponent),
+      getChildContext: allowInterop(getChildContext),
+      getChildContextKeys: allowInterop(getChildContextKeys),
       handleComponentWillMount: allowInterop(handleComponentWillMount),
       handleComponentDidMount: allowInterop(handleComponentDidMount),
       handleComponentWillReceiveProps: allowInterop(handleComponentWillReceiveProps),

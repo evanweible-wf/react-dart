@@ -83,6 +83,8 @@ class ReactClassConfig {
     Function componentWillUpdate,
     Function componentDidUpdate,
     Function componentWillUnmount,
+    Function getChildContext,
+    Map<String, dynamic> childContextTypes,
     Function getDefaultProps,
     Function getInitialState,
     Function render
@@ -122,6 +124,8 @@ class ReactElement {
   /// For composite components (react-dart or pure JS), this will be a [ReactClass].
   external dynamic get type;
 
+  external InteropContext get context;
+
   /// The props this element was created with.
   external InteropProps get props;
 
@@ -145,6 +149,7 @@ class ReactElement {
 @JS()
 @anonymous
 class ReactComponent {
+  external InteropContext get context;
   external InteropProps get props;
   external get refs;
   external void setState(state, [callback]);
@@ -156,6 +161,12 @@ class ReactComponent {
 // ----------------------------------------------------------------------------
 //   Interop internals
 // ----------------------------------------------------------------------------
+
+@JS()
+@anonymous
+class InteropContext {
+  
+}
 
 /// A JavaScript interop class representing a React JS `props` object.
 ///
@@ -189,6 +200,8 @@ class ReactDartComponentInternal {
 
   /// Whether the component is mounted.
   bool isMounted;
+
+  Map context;
 
   /// For a `ReactElement`, this is the initial props with defaults merged.
   ///
@@ -228,6 +241,8 @@ external ReactClassConfig createReactDartComponentClassConfig(ReactDartInteropSt
 class ReactDartInteropStatics {
   external factory ReactDartInteropStatics({
       initComponent,
+      getChildContext,
+      getChildContextKeys,
       handleComponentWillMount,
       handleComponentDidMount,
       handleComponentWillReceiveProps,
@@ -246,7 +261,8 @@ class ReactDartInteropStatics {
 ///
 /// See [ReactDartInteropStatics], [createReactDartComponentClassConfig].
 class ComponentStatics {
+  final Iterable<String> childContextKeys;
   final ComponentFactory componentFactory;
 
-  ComponentStatics(this.componentFactory);
+  ComponentStatics(this.childContextKeys, this.componentFactory);
 }
